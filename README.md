@@ -17,7 +17,7 @@ conda env create -f environment.yml
 conda activate mifgd
 ```
 
-- When you finish working, eactivate the environment: 
+- When you finish working, deactivate the environment: 
 
 ```
 conda deactivate
