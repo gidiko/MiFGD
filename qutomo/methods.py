@@ -214,14 +214,14 @@ class Worker:
         self.mu                        = mu
         
         self.label_list     = label_list
-        self.bitvector_list = bitvector_list
+        # self.bitvector_list = bitvector_list
         self.measurement_list = measurement_list
         self.projector_list   = projector_list
 
         self.num_tomography_labels = num_tomography_labels
         self.num_labels            = num_labels
 
-        self.num_bitvectors        = num_bitvectors
+        # self.num_bitvectors        = num_bitvectors
         
         n = len(label_list[0])
         d = 2 ** n
