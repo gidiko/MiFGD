@@ -15,6 +15,13 @@ import projectors
 
 class State:
     def __init__(self, n):
+        '''
+        Initializes State class
+        - n: number of qubits
+        - quantum register: object to hold quantum information
+        - classical register: object to hold classical information
+        - circuit_name: circuit name; defined in each subclass (GHZState, HadamardState, RandomState)
+        '''
         
         quantum_register   = qiskit.QuantumRegister(n, name='qr')
         classical_register = qiskit.ClassicalRegister(n, name='cr')
@@ -40,6 +47,9 @@ class State:
 
     
     def get_state_vector(self):
+        '''
+        Executes circuit by connecting to Qiskit object, and obtain state vector
+        '''
         if self.circuit is None:
             self.create_circuit()
         
@@ -52,12 +62,19 @@ class State:
 
     
     def get_state_matrix(self):
+        '''
+        Obtain density matrix by taking an outer product of state vector
+        '''
         state_vector = self.get_state_vector()
         state_matrix = outer(state_vector)
         return state_matrix
     
     
     def create_measurement_circuits(self, labels, label_format='big_endian'):
+        '''
+        Prepares measurement circuits
+        - labels: string of Pauli matrices (e.g. XYZXX)
+        '''
         
         if self.circuit is None:
             self.create_circuit()
@@ -93,6 +110,9 @@ class State:
 
     @staticmethod    
     def make_measurement_circuit_name(circuit_name, label):
+        '''
+        Measurement circuit naming convention
+        '''
         name = '%s-%s' % (circuit_name, label)
         return name
 
@@ -101,7 +121,12 @@ class State:
                                      backend   = 'qasm_simulator',
                                      num_shots = 100,
                                      label_format='big_endian'):
-        
+        '''
+        Executes measurement circuits
+        - labels: string of Pauli matrices (e.g. XYZXX)
+        - backend: qasm simulator or real quantum device
+        - num_shots: number of shots measurement is taken to get empirical frequency through counts
+        '''
         if self.measurement_circuit_names == []:
             self.create_measurement_circuits(labels, label_format)
         
@@ -125,6 +150,9 @@ class State:
 
 
 class GHZState(State):
+    '''
+    Constructor for GHZState class
+    '''
     def __init__(self, n):
         State.__init__(self, n)
         self.circuit_name = 'GHZ'
@@ -143,6 +171,9 @@ class GHZState(State):
 
         
 class HadamardState(State):
+    '''
+    Constructor for HadamardState class
+    '''
     def __init__(self, n):        
         State.__init__(self, n)
         self.circuit_name = 'Hadamard'
@@ -160,6 +191,9 @@ class HadamardState(State):
 
         
 class RandomState(State):
+    '''
+    Constructor for RandomState class
+    '''
     def __init__(self, n, seed=0, depth=40):
         State.__init__(self, n)
         self.circuit_name = 'Random-%d' % (self.n, )
