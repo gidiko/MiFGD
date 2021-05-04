@@ -29,6 +29,9 @@ def generate_random_measurement_counts(n, num_shots=1024):
 
 
 def expand_convert_measurements(data):
+    '''
+    Given the counts over 3^n labels (X, Y, Z axis), expand to counts over 4^n labels by injecting identity matrix I appropriately.
+    '''
     expanded_data    = {}
     for label, value in data.items():
         indices = list(filter(lambda i: label[i] == 'Z', range(len(label))))
@@ -56,7 +59,12 @@ def expand_convert_measurements(data):
 
 class Measurement:
     def __init__(self, label, count_dict):
-        
+        '''
+        Initializes Measurement class
+        - labels: string of Pauli matrices (e.g. XYZXX)
+        - count_dict: counts of each possible binary output string (e.g. '000...00', '000...01', etc.)
+        - num_shots: number of shots measurement is taken to get empirical frequency through counts
+        '''
         akey = list(count_dict.keys())[0]
         assert len(label) == len(akey)
 
@@ -96,6 +104,10 @@ class Measurement:
             
     
     def get_pauli_correlation_measurement(self, beta=None, parity_flavor='effective'):
+        '''
+        Generate Pauli correlation measurement (expectation value of Pauli monomials).
+        Note that summation of d=2^n Pauli basis measurement corresponds to one Pauli correlation measurement.
+        '''
         if beta == None:
             beta = 0.50922
         num_shots          = 1.0 * self.num_shots
@@ -107,6 +119,10 @@ class Measurement:
         return data
         
     def get_pauli_basis_measurement(self, beta=None):
+        '''
+        Generate Pauli basis measurement. 
+        Note that summation of d=2^n Pauli basis measurement corresponds to one Pauli correlation measurement.
+        '''
         if beta == None:
             beta = 0.50922
         num_shots   = 1.0 * self.num_shots
