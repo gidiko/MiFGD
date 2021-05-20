@@ -203,15 +203,15 @@ class Worker:
         if debug:
             print('Measurements ready to compute with')
 
-        self.num_iterations = num_iterations
-        self.eta            = eta
+        self.num_iterations = num_iterations    # number of iterations (gradient steps)
+        self.eta            = eta   # step size / learning rate
         
         self.trace                     = trace
-        self.target_state              = target_state
-        self.convergence_check_period  = convergence_check_period
-        self.relative_error_tolerance  = relative_error_tolerance
+        self.target_state              = target_state   
+        self.convergence_check_period  = convergence_check_period   # how often to check convergence
+        self.relative_error_tolerance  = relative_error_tolerance   # user-decided relative error 
         self.seed                      = seed
-        self.mu                        = mu
+        self.mu                        = mu   # momentum parameter (large: more acceleration)
         
         self.label_list     = label_list
         # self.bitvector_list = bitvector_list
@@ -226,7 +226,7 @@ class Worker:
         n = len(label_list[0])
         d = 2 ** n
         
-        self.n            = n
+        self.n            = n   # number of qubits
         self.num_elements = d
         
         self.process_idx   = process_idx
@@ -254,6 +254,16 @@ class Worker:
         
     @staticmethod
     def single_projection_diff(projector, measurement, state):
+        '''
+        Computes gradient of the L2-norm objective function.
+        - Objective function: f(u) = 0.5 * \sum_i (<A_i, uu*> - y_i)^2
+        - Gradient of f(u) wrt u: grad(u) = \sum_i (<A_i, uu*> - y_i) * A_i * u := \sum_i  grad_i (u)
+
+        Explanation of the variables below:
+        - projection: A_i * u term --> grad_i(u) = (trace(projection u*) - y_i) * projection
+        - trace = np.dot(projection, state.conj())  = trace(projection u*)
+        - diff = (trace - measurement) * projection = grad_i(u)
+        '''
         projection = projector.dot(state)
         trace      = np.dot(projection, state.conj())
         diff       = (trace - measurement) * projection
@@ -268,7 +278,9 @@ class Worker:
     
 
     def initialize(self):
-
+        '''
+        Random initialization of the state density matrix.
+        '''
         real_state = np.random.RandomState(self.seed).randn(self.num_elements)
         imag_state = np.random.RandomState(self.seed).randn(self.num_elements)
         state      = real_state + 1.0j * imag_state
@@ -282,6 +294,12 @@ class Worker:
                 
         
     def compute(self):
+        '''
+        Basic workflow of gradient descent iteration.
+        1. randomly initializes state dnesity matrix.
+        2. makes a step (defined differently for each "Worker" class below) until 
+           convergence criterion is satisfied. 
+        '''
         self.initialize()
         for self.iteration in range(self.num_iterations):
             if not self.converged:
@@ -291,7 +309,11 @@ class Worker:
 
             
     def convergence_check(self):
-                
+        '''
+        Check whether convergence criterion is satisfied by comparing
+        the relative error of the current estimate and the target density matrices.
+        Utilized in "step" function below.
+        '''                
         if self.process_idx == 0 and self.iteration % self.convergence_check_period == 0:
             # compute relative error
             numerator            = density_matrix_diff_norm(self.state, self.previous_state)
@@ -333,6 +355,11 @@ class Worker:
 ## XXX WIP
 ############################################################
 class BasicWorker(Worker):
+        '''
+        Basic worker class. Implements MiFGD, which performs
+        accelerated gradient descent on the factored space U 
+        (where UU^* = rho = density matrix)
+        '''         
     def __init__(self,
                  params_dict):
         
