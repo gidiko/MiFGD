@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository provides code implementation of [Fast quantum state reconstruction via accelerated non-convex programming]([https://arxiv.org/abs/2104.07006](https://arxiv.org/abs/2104.07006)). The proposed method is called Momentum-Inspired Factored Gradient Descent (MiFGD), and it combines ideas from compressed sensing, non-convex optimization, and acceleration methods. In a nutshell, MiFGD  can reconstruct an unknown low-rank density matrix given the corresponding set of measurements much more efficiently compared to other convex methods.
+This repository provides code implementation of "Fast quantum state reconstruction via accelerated non-convex programming" (https://arxiv.org/abs/2104.07006). The proposed method is called Momentum-Inspired Factored Gradient Descent (MiFGD), and it combines ideas from compressed sensing, non-convex optimization, and acceleration methods. In a nutshell, MiFGD  can reconstruct an unknown low-rank density matrix given the corresponding set of measurements much more efficiently compared to other convex methods.
 
 ## Install
 
