@@ -6,7 +6,7 @@ import numpy as np
 
 
 import qiskit
-from qiskit.tools import outer
+
 
 import methods
 import measurements
@@ -66,7 +66,7 @@ class State:
         Obtain density matrix by taking an outer product of state vector
         '''
         state_vector = self.get_state_vector()
-        state_matrix = outer(state_vector)
+        state_matrix = np.outer(state_vector, state_vector.T.conj())
         return state_matrix
     
     
